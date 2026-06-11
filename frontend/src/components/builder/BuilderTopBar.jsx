@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ChevronDown, Clock3, Eye, FileCode2, FileText, History, Home, Map, Maximize2, Minimize2, MoreHorizontal, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Rocket, Save } from 'lucide-react';
 import { useBuilderStore } from '../../store/builderStore';
-import PrototypeModeToggle from './prototype/PrototypeModeToggle';
 import ToolBar from './ToolBar';
 import { generateWebsiteCode } from '../../services/codeGenerator';
 import { projectStorage } from '../../services/projectStorage';
@@ -187,7 +186,6 @@ export default function BuilderTopBar() {
           <span className="hidden sm:inline">Map</span>
         </button>
         <div className="h-7 w-px bg-slate-800" />
-        <PrototypeModeToggle />
         <ToolBar />
         <div className="h-7 w-px bg-slate-800" />
         <button
