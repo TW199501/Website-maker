@@ -1,6 +1,5 @@
 import { Undo2, Redo2 } from 'lucide-react';
 import { useBuilderStore } from '../../store/builderStore';
-import DeviceSwitcher from './DeviceSwitcher';
 import ZoomControls from './ZoomControls';
 
 export default function BottomCanvasToolbar() {
@@ -9,9 +8,6 @@ export default function BottomCanvasToolbar() {
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-6 z-50 flex justify-center px-4">
       <div className="pointer-events-auto flex max-w-[calc(100%-1rem)] flex-wrap items-center justify-center gap-2 rounded-2xl border border-slate-700/80 bg-slate-950/90 px-3 py-2 shadow-2xl shadow-black/45 backdrop-blur-xl">
-        <DeviceSwitcher />
-
-        <div className="hidden h-8 w-px bg-slate-800 sm:block" />
 
         <ZoomControls />
 

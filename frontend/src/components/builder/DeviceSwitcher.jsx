@@ -23,11 +23,11 @@ export default function DeviceSwitcher() {
             title={device.label}
             aria-label={device.label}
             onClick={() => setActiveDevice(device.id)}
-            className={`h-8 w-9 rounded-lg flex items-center justify-center transition-all ${
-              active ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-500 hover:text-white hover:bg-slate-800'
+            className={`h-9 w-9 rounded-lg flex items-center justify-center transition-colors ${
+              active ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
-            <Icon size={15} />
+            <Icon size={16} />
           </button>
         );
       })}

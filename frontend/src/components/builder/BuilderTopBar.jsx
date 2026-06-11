@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ChevronDown, Clock3, Eye, FileCode2, FileText, History, Home, Map, Maximize2, Minimize2, MoreHorizontal, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Rocket, Save } from 'lucide-react';
 import { useBuilderStore } from '../../store/builderStore';
 import ToolBar from './ToolBar';
+import DeviceSwitcher from './DeviceSwitcher';
 import { generateWebsiteCode } from '../../services/codeGenerator';
 import { projectStorage } from '../../services/projectStorage';
 import { topBarTools } from '../../data/builderTools';
@@ -122,135 +123,145 @@ export default function BuilderTopBar() {
   };
 
   return (
-    <header className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-4 lg:px-6 shrink-0 z-50">
-      <div className="flex items-center gap-4 min-w-0">
-        <Link to="/dashboard" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+    <header className="h-14 bg-slate-950 border-b border-slate-800 flex items-center px-4 lg:px-6 shrink-0 z-50 shadow-sm relative">
+      {/* LEFT SECTION */}
+      <div className="flex-1 flex items-center gap-4 min-w-0">
+        <Link to="/dashboard" title="Back to Dashboard" className="inline-flex items-center justify-center h-9 w-9 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
           <ArrowLeft size={18} />
-          <span className="hidden md:inline text-[10px] font-black uppercase tracking-[0.18em]">Back to Dashboard</span>
         </Link>
-        <div className="h-7 w-px bg-slate-800 hidden md:block" />
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-indigo-400">
-            <Clock3 size={11} />
-            <span>{isSaving ? 'Saving...' : `Saved ${formatTime(lastSavedAt)}`}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <h1 className="truncate text-sm font-black uppercase tracking-widest text-white">{project?.name || 'Website Builder'}</h1>
-            <span className="text-sm text-slate-600">/</span>
-            <div className="relative" ref={pageDropdownRef}>
-              <button
-                type="button"
-                onClick={() => setPageDropdownOpen((o) => !o)}
-                className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm font-black uppercase tracking-widest text-slate-400 transition hover:bg-slate-800 hover:text-white"
-              >
-                <FileText size={12} />
-                <span className="max-w-[120px] truncate">{currentPage?.name || 'Home'}</span>
-                <ChevronDown size={12} />
-              </button>
-              {pageDropdownOpen && (
-                <div className="absolute left-0 top-9 z-[100] w-64 rounded-2xl border border-slate-800 bg-slate-950 p-2 shadow-2xl">
-                  <p className="px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.25em] text-slate-600">Switch Page</p>
-                  {(project?.pages || []).map((page) => (
-                    <button
-                      key={page.id}
-                      type="button"
-                      onClick={() => handleSwitchPage(page.id)}
-                      className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-bold transition ${
-                        currentPage?.id === page.id
-                          ? 'bg-indigo-600/20 text-indigo-200'
-                          : 'text-slate-300 hover:bg-slate-900 hover:text-white'
-                      }`}
-                    >
-                      {page.isHome ? <Home size={13} className="shrink-0 text-indigo-400" /> : <FileText size={13} className="shrink-0 text-slate-500" />}
-                      <span className="flex-1 truncate">{page.name}</span>
-                      <span className="text-[9px] font-bold text-slate-600">/{page.slug}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+        <div className="h-5 w-px bg-slate-800 hidden md:block" />
+        <div className="min-w-0 flex items-center gap-1.5">
+          <h1 className="truncate text-sm font-semibold text-slate-200">{project?.name || 'Website Builder'}</h1>
+          <span className="text-slate-600">/</span>
+          <div className="relative" ref={pageDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setPageDropdownOpen((o) => !o)}
+              className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-slate-400 transition hover:bg-slate-800 hover:text-white"
+            >
+              <FileText size={14} />
+              <span className="max-w-[120px] truncate">{currentPage?.name || 'Home'}</span>
+              <ChevronDown size={14} />
+            </button>
+            {pageDropdownOpen && (
+              <div className="absolute left-0 top-9 z-[100] w-64 rounded-2xl border border-slate-800 bg-slate-950 p-2 shadow-2xl">
+                <p className="px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.25em] text-slate-600">Switch Page</p>
+                {(project?.pages || []).map((page) => (
+                  <button
+                    key={page.id}
+                    type="button"
+                    onClick={() => handleSwitchPage(page.id)}
+                    className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-bold transition ${
+                      currentPage?.id === page.id
+                        ? 'bg-indigo-600/20 text-indigo-200'
+                        : 'text-slate-300 hover:bg-slate-900 hover:text-white'
+                    }`}
+                  >
+                    {page.isHome ? <Home size={13} className="shrink-0 text-indigo-400" /> : <FileText size={13} className="shrink-0 text-slate-500" />}
+                    <span className="flex-1 truncate">{page.name}</span>
+                    <span className="text-[9px] font-bold text-slate-600">/{page.slug}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto px-2 custom-scrollbar">
+      {/* CENTER SECTION */}
+      <div className="flex-[2] flex items-center justify-center gap-3 overflow-x-auto custom-scrollbar px-2">
         <button
           type="button"
           onClick={() => setCanvasView(canvasView === 'design' ? 'routing' : 'design')}
           title={canvasView === 'design' ? 'View routing map' : 'View design'}
-          className={`h-9 flex items-center gap-2 rounded-xl px-3 text-xs font-black uppercase tracking-widest transition-colors ${
+          className={`h-9 flex items-center gap-2 rounded-lg px-3 text-xs font-semibold tracking-wide transition-colors ${
             canvasView === 'routing' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'
           }`}
         >
-          <Map size={14} />
+          <Map size={16} />
           <span className="hidden sm:inline">Map</span>
         </button>
-        <div className="h-7 w-px bg-slate-800" />
+        
+        <div className="h-5 w-px bg-slate-800" />
+        
+        <DeviceSwitcher />
+        
+        <div className="h-5 w-px bg-slate-800" />
+        
         <ToolBar />
-        <div className="h-7 w-px bg-slate-800" />
-        <button
-          type="button"
-          title={leftPanelCollapsed ? 'Open left tool panel' : 'Collapse left tool panel'}
-          aria-label={leftPanelCollapsed ? 'Open left tool panel' : 'Collapse left tool panel'}
-          onClick={() => setLeftPanelCollapsed(!leftPanelCollapsed)}
-          className="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800"
-        >
-          {leftPanelCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
-        </button>
-        <button
-          type="button"
-          title={rightPanelCollapsed ? 'Open right properties panel' : 'Collapse right properties panel'}
-          aria-label={rightPanelCollapsed ? 'Open right properties panel' : 'Collapse right properties panel'}
-          onClick={() => setRightPanelCollapsed(!rightPanelCollapsed)}
-          className="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800"
-        >
-          {rightPanelCollapsed ? <PanelRightOpen size={16} /> : <PanelRightClose size={16} />}
-        </button>
-        <button
-          type="button"
-          title={fullscreenCanvas ? 'Exit fullscreen canvas' : 'Fullscreen canvas'}
-          aria-label={fullscreenCanvas ? 'Exit fullscreen canvas' : 'Fullscreen canvas'}
-          onClick={() => setFullscreenCanvas(!fullscreenCanvas)}
-          className="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800"
-        >
-          {fullscreenCanvas ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-        </button>
+
+        <div className="h-5 w-px bg-slate-800" />
+
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            title="Left Panel"
+            onClick={() => setLeftPanelCollapsed(!leftPanelCollapsed)}
+            className={`h-9 w-9 rounded-lg flex items-center justify-center transition-colors ${!leftPanelCollapsed ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+          >
+            {leftPanelCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+          </button>
+          <button
+            type="button"
+            title="Right Panel"
+            onClick={() => setRightPanelCollapsed(!rightPanelCollapsed)}
+            className={`h-9 w-9 rounded-lg flex items-center justify-center transition-colors ${!rightPanelCollapsed ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+          >
+            {rightPanelCollapsed ? <PanelRightOpen size={16} /> : <PanelRightClose size={16} />}
+          </button>
+          <button
+            type="button"
+            title="Fullscreen"
+            onClick={() => setFullscreenCanvas(!fullscreenCanvas)}
+            className={`h-9 w-9 rounded-lg flex items-center justify-center transition-colors ${fullscreenCanvas ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+          >
+            {fullscreenCanvas ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+          </button>
+        </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* RIGHT SECTION */}
+      <div className="flex-1 flex items-center justify-end gap-2.5">
+        <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 mr-2 hidden lg:flex">
+          <Clock3 size={12} />
+          <span>{isSaving ? 'Saving...' : `Saved ${formatTime(lastSavedAt)}`}</span>
+        </div>
+        
         <button
           type="button"
-          aria-label="Save"
           onClick={saveProject}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.16em] text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
+          className="inline-flex items-center justify-center h-9 px-3 rounded-lg text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 hover:text-white transition-colors"
         >
-          <Save size={15} />
+          <Save size={16} className="sm:mr-1.5" />
           <span className="hidden sm:inline">Save</span>
         </button>
+
         <button
           type="button"
-          aria-label="Preview"
           onClick={handlePreview}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.16em] text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
+          className="inline-flex items-center justify-center h-9 px-3 rounded-lg text-sm font-medium text-slate-300 border border-slate-700 hover:border-slate-500 hover:text-white transition-colors"
         >
-          <Eye size={15} />
+          <Eye size={16} className="sm:mr-1.5" />
           <span className="hidden sm:inline">Preview</span>
         </button>
+
         <button
           type="button"
-          aria-label="Publish"
           onClick={handlePublish}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.16em] text-white bg-indigo-600 hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20"
+          className="inline-flex items-center justify-center h-9 px-4 rounded-lg text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-colors shadow-sm"
         >
-          <Rocket size={15} />
+          <Rocket size={16} className="sm:mr-1.5" />
           <span className="hidden sm:inline">Publish</span>
         </button>
+
+        <div className="h-5 w-px bg-slate-800 ml-1 mr-1" />
+
         <div className="relative">
           <button
             type="button"
             title="More options"
             onClick={() => setMenuOpen((open) => !open)}
-            className="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800"
+            className="h-9 w-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800"
           >
             <MoreHorizontal size={18} />
           </button>
