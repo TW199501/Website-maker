@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Code2, Image, Layout, SquareMousePointer, Type } from 'lucide-react';
 import WorkspaceLayout from '../components/layout/WorkspaceLayout';
+import WebsiteAIPanel from '../components/website/WebsiteAIPanel';
 import { WebsiteLivePreview } from '../components/templates/TemplatePreviewModal';
 import { getTemplateProject, updateTemplateProject } from '../utils/projectStorage';
 
@@ -112,55 +112,13 @@ export default function WebsiteWorkspace() {
     setNotice('Saved locally.');
   };
 
-  const tools = [
-    {
-      icon: Layout,
-      label: 'Add Section',
-      action: () =>
-        appendHtml('<section class="shopcraft-added-section"><h2>New editable section</h2><p>Use this area for an offer, feature story, or page detail.</p></section>'),
-    },
-    {
-      icon: Type,
-      label: 'Add Text',
-      action: () =>
-        appendHtml('<section class="shopcraft-added-section"><h2>Editable headline</h2><p>Replace this text with your own message.</p></section>'),
-    },
-    {
-      icon: SquareMousePointer,
-      label: 'Add Button',
-      action: () => appendHtml('<section class="shopcraft-added-section"><a class="shopcraft-added-button" href="#contact">New CTA Button</a></section>'),
-    },
-    {
-      icon: Image,
-      label: 'Add Image',
-      action: () => appendHtml('<div class="shopcraft-added-image">Image Placeholder</div>'),
-    },
-    {
-      icon: Code2,
-      label: 'Edit Code',
-      action: () => setNotice('Use the code fields in the right panel to edit HTML, CSS, and JS.'),
-    },
-  ];
+  const handleAIGenerate = (payload) => {
+    console.log('[ShopCraft AI] Website generation payload:', payload);
+    setNotice(`AI generating: "${payload.prompt.slice(0, 50)}…"`);
+  };
 
   const leftPanel = (
-    <div className="flex flex-col gap-4">
-      {tools.map((tool) => {
-        const Icon = tool.icon;
-        return (
-          <button
-            key={tool.label}
-            type="button"
-            onClick={tool.action}
-            className="group relative grid h-12 w-12 place-items-center rounded-xl text-slate-500 transition hover:bg-slate-800 hover:text-white"
-          >
-            <Icon size={20} />
-            <span className="pointer-events-none absolute left-full ml-4 whitespace-nowrap rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold text-white opacity-0 transition group-hover:opacity-100">
-              {tool.label}
-            </span>
-          </button>
-        );
-      })}
-    </div>
+    <WebsiteAIPanel onGenerate={handleAIGenerate} />
   );
 
   const rightPanel = (
@@ -219,6 +177,7 @@ export default function WebsiteWorkspace() {
         projectName={project.name}
         leftPanel={leftPanel}
         rightPanel={rightPanel}
+        leftPanelClassName="w-80 md:w-96 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 overflow-hidden"
         publishLabel="Export"
         onSave={saveProject}
         onPreview={() => setShowPreview(true)}

@@ -3,33 +3,67 @@ import { useBuilderStore } from '../../store/builderStore';
 import { leftPanelTools } from '../../data/builderTools';
 
 export default function LeftSidebar() {
-  const { activeLeftTool, setActiveLeftTool } = useBuilderStore();
+  const { activeLeftTool, setActiveLeftTool, leftPanelCollapsed, setLeftPanelCollapsed } = useBuilderStore();
+
+  const topTools = leftPanelTools.filter((t) => ['Creation', 'Motion'].includes(t.category));
+  const bottomTools = leftPanelTools.filter((t) => ['Project'].includes(t.category));
+
+  const handleToolClick = (toolId) => {
+    if (activeLeftTool === toolId && !leftPanelCollapsed) {
+      // Clicking the same active tool toggles the panel closed
+      setLeftPanelCollapsed(true);
+    } else {
+      // Open or switch to the selected tool
+      setActiveLeftTool(toolId);
+      setLeftPanelCollapsed(false);
+    }
+  };
+
+  const renderTool = (tool) => {
+    const Icon = LucideIcons[tool.icon] || LucideIcons.Circle;
+    const active = activeLeftTool === tool.id && !leftPanelCollapsed;
+    return (
+      <button
+        key={tool.id}
+        type="button"
+        title={tool.name}
+        onClick={() => handleToolClick(tool.id)}
+        className={`group relative h-10 w-10 rounded-lg flex items-center justify-center transition-all duration-200 ${
+          active 
+            ? 'bg-indigo-500/15 text-indigo-400' 
+            : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
+        }`}
+      >
+        <Icon size={18} strokeWidth={active ? 2.5 : 2} />
+        
+        {/* Sleek Tooltip */}
+        <span className="pointer-events-none absolute left-full ml-3 rounded-md bg-slate-800 border border-slate-700/50 px-2.5 py-1.5 text-xs font-medium text-slate-200 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 whitespace-nowrap z-[90]">
+          {tool.name}
+        </span>
+        
+        {tool.status !== 'working' && (
+          <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-amber-400 border border-slate-900" />
+        )}
+      </button>
+    );
+  };
 
   return (
-    <aside className="w-[72px] bg-slate-900 border-r border-slate-800 flex flex-col items-center gap-2 py-4 shrink-0 overflow-y-auto custom-scrollbar">
-      {leftPanelTools.map((tool) => {
-        const Icon = LucideIcons[tool.icon] || LucideIcons.Circle;
-        const active = activeLeftTool === tool.id;
-        return (
-          <button
-            key={tool.id}
-            type="button"
-            title={`${tool.name} - ${tool.description}`}
-            onClick={() => setActiveLeftTool(tool.id)}
-            className={`group relative h-11 w-11 rounded-xl flex items-center justify-center transition-all ${
-              active ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-500 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <Icon size={19} />
-            <span className="pointer-events-none absolute left-full ml-3 rounded-lg bg-slate-950 border border-slate-800 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 whitespace-nowrap z-[90]">
-              {tool.name}
-            </span>
-            {tool.status !== 'working' && (
-              <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-amber-300" />
-            )}
-          </button>
-        );
-      })}
+    <aside className="w-14 bg-slate-950 border-r border-slate-800/60 flex flex-col items-center py-3 shrink-0 z-50">
+      {/* Top Tools Group */}
+      <div className="flex flex-col items-center gap-1.5">
+        {topTools.map(renderTool)}
+      </div>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Bottom Tools Group */}
+      <div className="flex flex-col items-center gap-1.5">
+        {/* Subtle divider */}
+        <div className="w-6 h-[1px] bg-slate-800/60 mb-1 rounded-full" />
+        {bottomTools.map(renderTool)}
+      </div>
     </aside>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import BuilderTopBar from './BuilderTopBar';
 import LeftSidebar from './LeftSidebar';
 import LeftToolPanel from './LeftToolPanel';
@@ -9,7 +9,8 @@ import { useBuilderStore } from '../../store/builderStore';
 import InteractionModal from './prototype/InteractionModal';
 import ContextMenu from './ContextMenu';
 import BottomCanvasToolbar from './BottomCanvasToolbar';
-import ExportPanel, { PreviewModal } from '../ExportPanel';
+import { PreviewModal } from '../ExportPanel';
+import { AIDrawerPanel } from './ai-drawer';
 
 export default function BuilderLayout() {
   const {
@@ -20,8 +21,8 @@ export default function BuilderLayout() {
     rightPanelCollapsed,
     fullscreenCanvas,
     canvasView,
-    setLeftPanelCollapsed,
-    setRightPanelCollapsed,
+    aiDrawerOpen,
+    setAiDrawerOpen,
     clearSelection,
     deleteSelected,
     duplicateSelected,
@@ -39,12 +40,29 @@ export default function BuilderLayout() {
     resetZoom,
     fitToScreen,
     showToast,
+    selectedSection,
+    selectedElement,
+    getSelectedNode,
+    activeTool,
   } = useBuilderStore();
   const [previewHTML, setPreviewHTML] = useState('');
-  const exportBuilderState = useMemo(
-    () => (project ? { ...project, nodesMap } : null),
-    [nodesMap, project],
-  );
+  const previousToolRef = useRef('select');
+
+  // Track the previous tool so spacebar can restore it
+  useEffect(() => {
+    if (activeTool !== 'hand') {
+      previousToolRef.current = activeTool;
+    }
+  }, [activeTool]);
+
+  // Build a context object for the AI drawer from current selection
+  const aiSelectedElement = useMemo(() => {
+    const node = getSelectedNode;
+    if (node) return { name: node.name || node.type, type: node.type, id: node.id };
+    if (selectedElement) return { name: selectedElement.name || selectedElement.type, type: selectedElement.type, id: selectedElement.id };
+    if (selectedSection) return { name: selectedSection.name || selectedSection.type, type: selectedSection.type, id: selectedSection.id };
+    return null;
+  }, [getSelectedNode, selectedElement, selectedSection]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -161,7 +179,7 @@ export default function BuilderLayout() {
     };
 
     const handleKeyUp = (event) => {
-      if (event.code === 'Space') setActiveTool('select');
+      if (event.code === 'Space') setActiveTool(previousToolRef.current || 'select');
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -188,38 +206,22 @@ export default function BuilderLayout() {
       <BuilderTopBar />
       <div className="flex min-h-0 flex-1 overflow-hidden">
         <LeftSidebar />
-        {!fullscreenCanvas && !leftPanelCollapsed && <LeftToolPanel />}
+        {!fullscreenCanvas && <LeftToolPanel />}
         <main className="relative min-w-0 flex-1 overflow-hidden bg-slate-950">
-          {!fullscreenCanvas && leftPanelCollapsed && (
-            <button
-              type="button"
-              onClick={() => setLeftPanelCollapsed(false)}
-              className="absolute left-3 top-3 z-30 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-300 shadow-xl hover:text-white"
-            >
-              Open tools
-            </button>
-          )}
-          {!fullscreenCanvas && rightPanelCollapsed && (
-            <button
-              type="button"
-              onClick={() => setRightPanelCollapsed(false)}
-              className="absolute right-3 top-3 z-30 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-300 shadow-xl hover:text-white"
-            >
-              Open properties
-            </button>
-          )}
           <div className="pointer-events-none absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
           <div className="relative z-10 h-full">
             {canvasView === 'routing' ? <RoutingMapView /> : <WebsiteCanvas />}
           </div>
           <BottomCanvasToolbar />
-          <ExportPanel
-            builderState={exportBuilderState}
-            onPreview={setPreviewHTML}
-            onStatus={showToast}
-          />
         </main>
-        {!fullscreenCanvas && !rightPanelCollapsed && <RightPropertiesPanel />}
+        {!fullscreenCanvas && !rightPanelCollapsed && !aiDrawerOpen && <RightPropertiesPanel />}
+
+        {/* AI Drawer Panel */}
+        <AIDrawerPanel
+          isOpen={aiDrawerOpen}
+          onClose={() => setAiDrawerOpen(false)}
+          selectedElement={aiSelectedElement}
+        />
       </div>
       {toast && (
         <div className={`fixed bottom-5 left-1/2 z-[120] -translate-x-1/2 rounded-2xl border px-5 py-3 text-xs font-black uppercase tracking-widest shadow-2xl ${

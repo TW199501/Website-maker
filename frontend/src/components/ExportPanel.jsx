@@ -1,9 +1,5 @@
 import { useState } from 'react';
-import { Copy, Download, Eye, X } from 'lucide-react';
-import { generatePreviewHTML } from '../export-engine/previewRenderer.js';
-import { downloadWebsiteZip } from '../export-engine/zipExporter.js';
-
-const buttonBase = 'inline-flex items-center gap-2 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest shadow-2xl transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60';
+import { X } from 'lucide-react';
 
 export function PreviewModal({ html, onClose }) {
   if (!html) return null;
@@ -37,84 +33,9 @@ export function PreviewModal({ html, onClose }) {
   );
 }
 
-export default function ExportPanel({ builderState, onPreview, onStatus }) {
-  const [busyAction, setBusyAction] = useState(null);
-  const disabled = !builderState || Boolean(busyAction);
-
-  const runAction = async (action, callback) => {
-    if (!builderState) return;
-    setBusyAction(action);
-    try {
-      await callback();
-    } catch (error) {
-      console.error(`Export ${action} failed`, error);
-      onStatus?.('Export failed. Please try again.', 'error');
-    } finally {
-      setBusyAction(null);
-    }
-  };
-
-  const handlePreview = () => runAction('preview', async () => {
-    const previewHTML = generatePreviewHTML(builderState);
-    onPreview(previewHTML);
-    onStatus?.('Website preview generated.', 'success');
-  });
-
-  const handleDownload = () => runAction('download', async () => {
-    await downloadWebsiteZip(builderState);
-    onStatus?.('Website ZIP downloaded.', 'success');
-  });
-
-  const handleCopy = () => runAction('copy', async () => {
-    const html = generatePreviewHTML(builderState);
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(html);
-    } else {
-      const textarea = document.createElement('textarea');
-      textarea.value = html;
-      textarea.setAttribute('readonly', '');
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      textarea.remove();
-    }
-    onStatus?.('Standalone HTML copied.', 'success');
-  });
-
-  return (
-    <div className="pointer-events-none fixed bottom-20 right-5 z-[90] flex flex-col gap-2">
-      <button
-        type="button"
-        onClick={handlePreview}
-        disabled={disabled}
-        title="Preview Website"
-        className={`${buttonBase} pointer-events-auto border border-white/15 bg-slate-950 text-white hover:bg-slate-900`}
-      >
-        <Eye size={16} />
-        {busyAction === 'preview' ? 'Generating' : 'Preview Website'}
-      </button>
-      <button
-        type="button"
-        onClick={handleDownload}
-        disabled={disabled}
-        title="Download ZIP"
-        className={`${buttonBase} pointer-events-auto bg-indigo-600 text-white hover:bg-indigo-500`}
-      >
-        <Download size={16} />
-        {busyAction === 'download' ? 'Building ZIP' : 'Download ZIP'}
-      </button>
-      <button
-        type="button"
-        onClick={handleCopy}
-        disabled={disabled}
-        title="Copy HTML"
-        className={`${buttonBase} pointer-events-auto border border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800`}
-      >
-        <Copy size={16} />
-        {busyAction === 'copy' ? 'Copying' : 'Copy HTML'}
-      </button>
-    </div>
-  );
+// The floating export buttons have been removed from the workspace.
+// Export actions are now only available through the top bar "More" menu.
+// This default export is kept for backward compatibility but renders nothing.
+export default function ExportPanel() {
+  return null;
 }

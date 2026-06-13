@@ -136,16 +136,16 @@ export default function Landing() {
               ShopCraft Studio helps local businesses and professionals create websites, marketing designs, animations, and simple 3D visuals using AI-powered no-code tools.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20 w-full px-4 sm:px-0">
               <Link 
                 to="/register" 
-                className="w-full sm:w-auto bg-slate-900 text-white px-10 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest hover:bg-indigo-600 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-slate-200"
+                className="w-full sm:w-auto bg-slate-900 text-white px-10 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest hover:bg-indigo-600 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-slate-200 text-center"
               >
                 Start Creating Now
               </Link>
               <a 
                 href="#templates" 
-                className="w-full sm:w-auto border-2 border-slate-200 text-slate-900 px-10 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest hover:border-indigo-600 hover:text-indigo-600 transition-all"
+                className="w-full sm:w-auto border-2 border-slate-200 text-slate-900 px-10 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest hover:border-indigo-600 hover:text-indigo-600 transition-all text-center"
               >
                 Explore Templates
               </a>
@@ -242,7 +242,7 @@ export default function Landing() {
       {/* 4. HOW IT WORKS SECTION */}
       <section className="py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div>
               <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-10 uppercase leading-[0.9]">
                 HOW IT <span className="text-indigo-600">WORKS</span>
@@ -332,7 +332,7 @@ export default function Landing() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
             {templateCategories.map((category) => (
               <div 
                 key={category} 
@@ -354,7 +354,7 @@ export default function Landing() {
       {/* 7. PROJECT WORKSPACE SECTION */}
       <section className="py-32 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="bg-white rounded-[3rem] p-12 md:p-20 border border-slate-200 shadow-xl grid lg:grid-cols-2 gap-20 items-center">
+          <div className="bg-white rounded-[2rem] md:rounded-[3rem] p-8 md:p-12 lg:p-20 border border-slate-200 shadow-xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div>
               <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 uppercase leading-[0.9]">
                 YOUR PERSONAL <br /> <span className="text-indigo-600">WORKSPACE</span>
@@ -446,11 +446,11 @@ export default function Landing() {
           <p className="text-slate-400 text-xl mb-12">
             No coding. No design experience. Just choose, customize, save, and publish.
           </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link to="/register" className="bg-white text-slate-900 px-12 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest hover:bg-indigo-400 hover:text-white transition-all">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center w-full px-4 sm:px-0">
+            <Link to="/register" className="w-full sm:w-auto bg-white text-slate-900 px-12 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest hover:bg-indigo-400 hover:text-white transition-all text-center">
               Get Started Free
             </Link>
-            <button className="border-2 border-slate-700 text-white px-12 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest hover:border-white transition-all">
+            <button className="w-full sm:w-auto border-2 border-slate-700 text-white px-12 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest hover:border-white transition-all text-center">
               View Demo
             </button>
           </div>
@@ -509,11 +509,11 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-between items-center pt-10 border-t border-slate-100 gap-6">
-            <p className="text-slate-400 text-sm font-medium">
+          <div className="flex flex-col gap-6 md:flex-row justify-between items-center pt-10 border-t border-slate-100">
+            <p className="text-slate-400 text-sm font-medium text-center md:text-left">
               &copy; 2026 ShopCraft Studio. All rights reserved.
             </p>
-            <div className="flex gap-8 text-sm text-slate-400 font-medium">
+            <div className="flex flex-wrap justify-center md:justify-end gap-6 md:gap-8 text-sm text-slate-400 font-medium">
               <a href="#" className="hover:text-indigo-600">Privacy Policy</a>
               <a href="#" className="hover:text-indigo-600">Terms of Service</a>
             </div>

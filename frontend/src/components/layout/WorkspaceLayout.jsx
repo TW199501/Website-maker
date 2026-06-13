@@ -17,7 +17,8 @@ export default function WorkspaceLayout({
   onPublish,
   publishLabel = "Publish",
   leftPanel,
-  rightPanel
+  rightPanel,
+  leftPanelClassName
 }) {
   return (
     <div className="h-screen w-full flex flex-col bg-slate-950 text-slate-200 overflow-hidden">
@@ -75,7 +76,7 @@ export default function WorkspaceLayout({
       {/* Main Workspace Area */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Tools */}
-        <aside className="w-16 md:w-20 bg-slate-900 border-r border-slate-800 flex flex-col items-center py-6 shrink-0 overflow-y-auto custom-scrollbar">
+        <aside className={leftPanelClassName || "w-16 md:w-20 bg-slate-900 border-r border-slate-800 flex flex-col items-center py-6 shrink-0 overflow-y-auto custom-scrollbar"}>
           {leftPanel}
         </aside>
 

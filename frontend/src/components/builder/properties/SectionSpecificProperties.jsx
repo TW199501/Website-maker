@@ -3,9 +3,12 @@ import { useBuilderStore } from '../../../store/builderStore';
 import { NODE_TYPES } from '../../../data/nodeSchema';
 import { ColorInput, MiniButton, PropertyGroup, SelectInput, TextInput, ToggleInput } from './PropertyControls';
 
+const sectionTypeOptions = ['hero', 'about', 'services', 'gallery', 'testimonials', 'pricing', 'contact', 'footer', 'custom'];
+
 const rootSectionKind = (node) => {
   const label = `${node?.type || ''} ${node?.name || ''}`.toLowerCase();
   if (!node) return 'none';
+  if (node.props?.sectionType) return node.props.sectionType;
   if (node.type === NODE_TYPES.NAVBAR || label.includes('navbar')) return 'navbar';
   if (node.type === NODE_TYPES.FOOTER || label.includes('footer')) return 'footer';
   if (label.includes('hero')) return 'hero';
@@ -90,6 +93,7 @@ export default function SectionSpecificProperties() {
   return (
     <PropertyGroup title={`${kind === 'section' ? 'Section' : kind} Settings`}>
       <TextInput label="Section name" value={node.name || ''} onChange={(value) => updateNodeInMap(node.id, { name: value })} />
+      <SelectInput label="Section type" value={props.sectionType || (kind === 'section' ? 'custom' : kind)} onChange={(value) => updateNodePropsInMap(node.id, { sectionType: value })} options={sectionTypeOptions} />
 
       {kind === 'navbar' && (
         <>
@@ -142,12 +146,14 @@ export default function SectionSpecificProperties() {
         </>
       )}
 
-      {(kind === 'section' || kind === 'footer') && (
+      {!['navbar', 'hero', 'services'].includes(kind) && (
         <>
           <ColorInput label="Background color" value={styles.backgroundColor || '#ffffff'} onChange={updateStyle('backgroundColor')} />
+          <TextInput label="Background image" value={styles.backgroundImage?.replace(/^url\((.*)\)$/i, '$1') || ''} onChange={(value) => updateStyle('backgroundImage')(value ? `url(${value})` : '')} />
           <div className="grid grid-cols-2 gap-2">
             <TextInput label="Width" value={layout.width || 'auto'} onChange={updateLayout('width')} />
             <TextInput label="Height" value={layout.height || 'auto'} onChange={updateLayout('height')} />
+            <TextInput label="Min height" value={styles.minHeight || ''} onChange={updateStyle('minHeight')} />
             <TextInput label="Padding" value={styles.padding || ''} onChange={updateStyle('padding')} />
             <TextInput label="Margin" value={styles.margin || ''} onChange={updateStyle('margin')} />
           </div>

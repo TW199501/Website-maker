@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronDown, Clock3, Eye, FileCode2, FileText, History, Home, Map, Maximize2, Minimize2, MoreHorizontal, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Rocket, Save } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Clock3, Eye, FileCode2, FileText, History, Home, Map, Maximize2, Minimize2, MoreHorizontal, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Rocket, Save, Sparkles } from 'lucide-react';
 import { useBuilderStore } from '../../store/builderStore';
 import ToolBar from './ToolBar';
 import DeviceSwitcher from './DeviceSwitcher';
@@ -39,6 +39,8 @@ export default function BuilderTopBar() {
     setLeftPanelCollapsed,
     setRightPanelCollapsed,
     setFullscreenCanvas,
+    aiDrawerOpen,
+    setAiDrawerOpen,
   } = useBuilderStore();
 
   const handlePreview = async () => {
@@ -227,6 +229,19 @@ export default function BuilderTopBar() {
           <span>{isSaving ? 'Saving...' : `Saved ${formatTime(lastSavedAt)}`}</span>
         </div>
         
+        <button
+          type="button"
+          onClick={() => setAiDrawerOpen(!aiDrawerOpen)}
+          className={`inline-flex items-center justify-center h-9 px-3 mr-2 rounded-lg text-sm font-black uppercase tracking-widest transition-all shadow-lg ${
+            aiDrawerOpen 
+              ? 'bg-violet-600 text-white shadow-violet-500/30' 
+              : 'bg-slate-800 text-violet-400 hover:bg-violet-500/20 hover:text-violet-300'
+          }`}
+        >
+          <Sparkles size={16} className="sm:mr-1.5" />
+          <span className="hidden sm:inline">AI Assistant</span>
+        </button>
+
         <button
           type="button"
           onClick={saveProject}

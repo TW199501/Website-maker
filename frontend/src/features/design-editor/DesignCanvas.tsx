@@ -64,8 +64,15 @@ function RenderElement({
   );
 }
 
-export default function DesignCanvas({ canvas = defaultDesignCanvas }: { canvas?: DesignCanvasDocument }) {
-  const [selectedId, setSelectedId] = useState<string | null>(canvas.elements[0]?.id || null);
+export default function DesignCanvas({ 
+  canvas = defaultDesignCanvas,
+  selectedId,
+  onSelectElement,
+}: { 
+  canvas?: DesignCanvasDocument;
+  selectedId: string | null;
+  onSelectElement: (id: string) => void;
+}) {
   const scale = Math.min(760 / canvas.width, 620 / canvas.height);
 
   return (
@@ -78,7 +85,7 @@ export default function DesignCanvas({ canvas = defaultDesignCanvas }: { canvas?
               key={element.id}
               element={element}
               selected={selectedId === element.id}
-              onSelect={() => setSelectedId(element.id)}
+              onSelect={() => onSelectElement(element.id)}
             />
           ))}
         </Layer>

@@ -36,7 +36,7 @@ export default function Register() {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="max-w-md w-full bg-gray-800 border border-gray-700 rounded-2xl p-8 shadow-2xl"
+        className="max-w-md w-full bg-gray-800 border border-gray-700 rounded-2xl p-6 md:p-8 shadow-2xl"
       >
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-white">Create Account</h2>

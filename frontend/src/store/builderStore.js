@@ -187,7 +187,7 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
   const [selectedSectionId, setSelectedSectionId] = useState(null);
   const [selectedElementId, setSelectedElementId] = useState(null);
   const [selectedInteractionId, setSelectedInteractionId] = useState(null);
-  const [activeLeftTool, setActiveLeftTool] = useState('ai');
+  const [activeLeftTool, setActiveLeftTool] = useState('add');
   const [activeDevice, setActiveDeviceState] = useState('desktop');
   const [builderMode, setBuilderModeState] = useState('design');
   const [activeTool, setActiveToolState] = useState('select');
@@ -206,6 +206,7 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
   const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
   const [fullscreenCanvas, setFullscreenCanvas] = useState(false);
+  const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
   const [zoom, setZoomState] = useState(100);
   const [fitRequestId, setFitRequestId] = useState(0);
   const [connectionDraft, setConnectionDraft] = useState(null);
@@ -665,13 +666,13 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
       props: { ...(preset.props || {}), ...(overrides.props || {}) },
       responsive: { ...(preset.responsive || {}), ...(overrides.responsive || {}) },
     };
-    const ensureSectionId = targetSectionId || sections[0]?.id;
+    const firstPageNode = currentPage?.id
+      ? nodeOps.getPageRootNodes(nodesMap, currentPage.id)[0]?.id
+      : null;
+    const ensureSectionId = targetSectionId || sections[0]?.id || firstPageNode;
     const selectedNode = selectedNodeIds.length === 1 ? nodesMap[selectedNodeIds[0]] : null;
     const selectedNodeParent = selectedNode && CONTAINER_NODE_TYPES.has(selectedNode.type)
       ? selectedNode.id
-      : null;
-    const firstPageNode = currentPage?.id
-      ? nodeOps.getPageRootNodes(nodesMap, currentPage.id)[0]?.id
       : null;
     const nodeParentId = selectedNodeParent || selectedNode?.parentId || ensureSectionId || firstPageNode || currentPage?.id || null;
 
@@ -947,7 +948,13 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
     return null;
   }, [commitNodesMap, selectedElement, selectedElementId, selectedNodeIds, selectedSection, selectedSectionId, showToast, updateElement, updateSection]);
 
-  const moveElement = useCallback((sectionId, elementId, direction) => {
+  const moveElement = useCallback((sectionId, elementId, direction, targetIndex = -1) => {
+    if (direction !== 'up' && direction !== 'down') {
+      const toSectionId = elementId;
+      const movedElementId = direction;
+      commitNodesMap((map) => nodeOps.moveNode(map, movedElementId, toSectionId, targetIndex));
+      return true;
+    }
     commitProject((draft) =>
       toPageSections(draft, draft.currentPageId, (items) =>
         items.map((section) => {
@@ -963,7 +970,7 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
         }),
       ),
     );
-  }, [commitProject]);
+  }, [commitNodesMap, commitProject]);
 
   const moveSelectedUp = useCallback(() => {
     if (selectedElement) return moveElement(selectedSectionId, selectedElementId, 'up');
@@ -1356,7 +1363,8 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
       ...draft,
       pages: draft.pages.map((page) => (page.id === pageId ? { ...page, name, slug: slugify(name), path: page.isHome ? '/' : `/${slugify(name)}` } : page)),
     }));
-  }, [commitProject]);
+    commitNodesMap((map) => (map[pageId] ? nodeOps.updateNode(map, pageId, { name }) : map), { skipHistory: true });
+  }, [commitNodesMap, commitProject]);
 
   const updatePage = useCallback((pageId, patch) => {
     commitProject((draft) => ({
@@ -1373,16 +1381,54 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
         };
       }),
     }));
-  }, [commitProject]);
+    if (patch.name || patch.styles) {
+      const nodePatch = {};
+      if (patch.name) nodePatch.name = patch.name;
+      if (patch.styles) nodePatch.styles = patch.styles;
+      commitNodesMap((map) => (
+        map[pageId] ? nodeOps.updateNode(map, pageId, nodePatch) : map
+      ), { skipHistory: true });
+    }
+  }, [commitNodesMap, commitProject]);
 
   const duplicatePage = useCallback((pageId) => {
     const page = project?.pages?.find((item) => item.id === pageId);
     if (!page) return showToast('Page not found.', 'error');
-    const copy = { ...rekeyTree(page), name: `${page.name} Copy`, slug: slugify(`${page.name}-copy`), isHome: false };
+    let copyId = null;
+    commitNodesMap((map) => {
+      if (map[pageId]) {
+        const result = nodeOps.duplicateNode(map, pageId);
+        copyId = result.newNodeId;
+        return copyId
+          ? nodeOps.updateNode(result.nodesMap, copyId, { name: `${page.name} Copy` })
+          : result.nodesMap;
+      }
+      copyId = createId('page');
+      return {
+        ...map,
+        [copyId]: createNode(NODE_TYPES.PAGE, {
+          id: copyId,
+          name: `${page.name} Copy`,
+          styles: page.styles || {},
+          children: [],
+        }),
+      };
+    });
+    const copy = {
+      ...page,
+      id: copyId || createId('page'),
+      name: `${page.name} Copy`,
+      slug: slugify(`${page.name}-copy`),
+      path: `/${slugify(`${page.name}-copy`)}`,
+      isHome: false,
+      sections: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
     commitProject((draft) => ({ ...draft, pages: [...draft.pages, copy] }));
     showToast('Page duplicated.', 'success');
     return copy;
-  }, [commitProject, project, showToast]);
+  }, [commitNodesMap, commitProject, project, showToast]);
 
   const deletePage = useCallback((pageId) => {
     if (project?.pages?.length <= 1) return showToast('A project needs at least one page.', 'error');
@@ -1394,9 +1440,11 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
       const current = pages.find((item) => item.id === currentPageId) || pages[0];
       return { ...draft, pages, currentPageId, sections: current.sections };
     });
+    commitNodesMap((map) => nodeOps.deleteNode(map, pageId));
+    clearSelection();
     showToast('Page deleted.', 'success');
     return true;
-  }, [commitProject, project, showToast]);
+  }, [clearSelection, commitNodesMap, commitProject, project, showToast]);
 
   const setHomePage = useCallback((pageId) => {
     commitProject((draft) => ({
@@ -1417,6 +1465,28 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
     }, { skipHistory: true });
     clearSelection();
   }, [clearSelection, commitProject]);
+
+  const selectPage = useCallback((pageId) => {
+    switchPage(pageId);
+    setSelectedSectionId(null);
+    setSelectedElementId(null);
+    setSelectedInteractionId(null);
+    setSelectedNodeIds(pageId ? [pageId] : []);
+  }, [switchPage]);
+
+  const setSelectedItem = useCallback((type, id) => {
+    if (!id) {
+      clearSelection();
+      return false;
+    }
+    if (type === 'page') {
+      selectPage(id);
+      return true;
+    }
+    setSelectedInteractionId(null);
+    selectNodes([id]);
+    return true;
+  }, [clearSelection, selectNodes, selectPage]);
 
   const selectInteraction = useCallback((interactionId) => {
     setSelectedInteractionId(interactionId);
@@ -1769,6 +1839,15 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
     showToast('Pasted.', 'success');
   }, [clipboard, commitNodesMap, showToast]);
 
+  const renameSection = useCallback((sectionId, name) => updateNodeInMap(sectionId, { name }), [updateNodeInMap]);
+  const renameElement = useCallback((elementId, name) => updateNodeInMap(elementId, { name }), [updateNodeInMap]);
+  const toggleSectionHidden = useCallback((sectionId) => hideNodeInMap(sectionId), [hideNodeInMap]);
+  const toggleSectionLocked = useCallback((sectionId) => lockNodeInMap(sectionId), [lockNodeInMap]);
+  const toggleElementHidden = useCallback((elementId) => hideNodeInMap(elementId), [hideNodeInMap]);
+  const toggleElementLocked = useCallback((elementId) => lockNodeInMap(elementId), [lockNodeInMap]);
+  const updateElementStyles = useCallback((elementId, styles) => updateNodeStylesInMap(elementId, styles), [updateNodeStylesInMap]);
+  const updateSectionStyles = useCallback((sectionId, styles) => updateNodeStylesInMap(sectionId, styles), [updateNodeStylesInMap]);
+
   // Derived: get node tree for current page
   const nodeTree = useMemo(() => {
     if (!currentPage) return null;
@@ -1813,6 +1892,8 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
     leftPanelCollapsed,
     rightPanelCollapsed,
     fullscreenCanvas,
+    aiDrawerOpen,
+    setAiDrawerOpen,
     canvasView,
     setCanvasView,
     pendingInsert,
@@ -1829,9 +1910,11 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
     selectSection,
     selectElement,
     selectInteraction,
+    selectPage,
     clearSelection,
     selectNode,
     selectNodes,
+    setSelectedItem,
     setMode,
     setActiveTool,
     startSmartInsert,
@@ -1867,11 +1950,20 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
     duplicateSection,
     moveSection,
     reorderSections,
+    renameSection,
+    toggleSectionHidden,
+    toggleSectionLocked,
     addElement,
     updateElement,
     deleteElement,
     duplicateElement,
     reorderElements,
+    renameElement,
+    moveElement,
+    toggleElementHidden,
+    toggleElementLocked,
+    updateElementStyles,
+    updateSectionStyles,
     updateSelectedStyles,
     updateSelectedProps,
     updateSelectedContent,
@@ -1958,14 +2050,14 @@ export const BuilderProvider = ({ projectId, initialPageId, children }) => {
     activeDevice, activeLeftTool, activeTool, addAsset, addElement, addInteraction, addPage, addSection, alignSelected, applyDesignTemplate, applyTemplate, applyTheme,
     builderMode, cancelConnection, cancelSmartInsert, canvasPan, clearPlacementMode, clearSelection, clipboard, closeContextMenu, completeConnection, connectionDraft, contextMenu, copySelected, currentPage, deleteElement, deleteInteraction,
     deletePage, deleteSection, deleteSelected, dragState, duplicateElement, duplicatePage,
-    duplicateSection, duplicateSelected, future, fullscreenCanvas, generateCode, generatedCode, generateMockSection, generateMockWebsite, generateSEO, groupSelected, hideSelected, history, isSaving,
-    fitRequestId, fitToScreen, lastSavedAt, loadProject, moveSection, nudgeSelected, openContextMenu, pasteSelected, pendingInsert, previewMode, project, publishProject, redo, renamePage, updatePage,
+    duplicateSection, duplicateSelected, future, fullscreenCanvas, aiDrawerOpen, generateCode, generatedCode, generateMockSection, generateMockWebsite, generateSEO, groupSelected, hideSelected, history, isSaving,
+    fitRequestId, fitToScreen, lastSavedAt, loadProject, moveElement, moveSection, nudgeSelected, openContextMenu, pasteSelected, pendingInsert, previewMode, project, publishProject, redo, renameElement, renamePage, renameSection, updatePage,
     leftPanelCollapsed, lockSelected, moveSelectedDown, moveSelectedUp, reorderElements, reorderSections,
-    rewriteSelectedText, runInteraction, runNodeInteraction, saveProject, sections, selectAllNodes, selectElement, selectInteraction, selectNode, selectNodes, selectSection,
+    rewriteSelectedText, runInteraction, runNodeInteraction, saveProject, sections, selectAllNodes, selectElement, selectInteraction, selectNode, selectNodes, selectPage, selectSection,
     selectedElement, selectedElementId, selectedInteraction, selectedInteractionId,
-    selectedItem, selectedKind, selectedNodeIds, selectedSection, selectedSectionId, setActiveTool, setHomePage, setMode, showToast, snapEnabled, startPlacementMode, startSmartInsert, switchPage, toast,
+    selectedItem, selectedKind, selectedNodeIds, selectedSection, selectedSectionId, setActiveTool, setHomePage, setMode, setSelectedItem, showToast, snapEnabled, startPlacementMode, startSmartInsert, switchPage, toast,
     resetZoom, rightPanelCollapsed, setZoom, setZoomMode, ungroupSelected, zoom, zoomIn, zoomOut,
-    undo, updateConnectionDrag, updateElement, updateInteraction, updatePlacementMode, updateProjectSEO, updateProjectMeta, updateProjectSettings, updateSection, updateSelectedAnimation,
+    toggleElementHidden, toggleElementLocked, toggleSectionHidden, toggleSectionLocked, undo, updateConnectionDrag, updateElement, updateElementStyles, updateInteraction, updatePlacementMode, updateProjectSEO, updateProjectMeta, updateProjectSettings, updateSection, updateSectionStyles, updateSelectedAnimation,
     updateSelectedContent, updateSelectedProps, updateSelectedResponsive, updateSelectedStyles, validateRoutes,
     nodesMap, editingNodeId, getNode, getSelectedNode, getSelectedNodes, currentPageNodes, nodeTree, flatNodeList,
     addNodeToMap, updateNodeInMap, updateNodeContentInMap, updateNodeStylesInMap, updateNodePropsInMap, updateNodeLayoutInMap, updateNodeResponsiveInMap, updateNodeAnimationInMap,

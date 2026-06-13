@@ -1,5 +1,4 @@
 import { useBuilderStore } from '../../store/builderStore';
-import AICreatePanel from './panels/AICreatePanel';
 import AddElementsPanel from './panels/AddElementsPanel';
 import SectionsPanel from './panels/SectionsPanel';
 import TemplatesPanel from './panels/TemplatesPanel';
@@ -19,7 +18,6 @@ import { PanelShell } from './panels/PanelShell';
 import { leftPanelTools } from '../../data/builderTools';
 
 const panelByName = {
-  AICreatePanel,
   AddElementsPanel,
   SectionsPanel,
   TemplatesPanel,
@@ -39,13 +37,20 @@ const panelByName = {
 };
 
 export default function LeftToolPanel() {
-  const { activeLeftTool } = useBuilderStore();
+  const { activeLeftTool, leftPanelCollapsed } = useBuilderStore();
+
+  // When left panel is collapsed, don't render
+  if (leftPanelCollapsed) return null;
+
   const tool = leftPanelTools.find((item) => item.id === activeLeftTool);
-  const Panel = panelByName[tool?.panelComponent] || panelByName[activeLeftTool] || AICreatePanel;
+  const Panel = panelByName[tool?.panelComponent] || panelByName[activeLeftTool];
+
+  // Default to AddElementsPanel when no tool is selected (clean open state)
+  const ResolvedPanel = Panel || AddElementsPanel;
 
   return (
-    <aside className="w-[320px] shrink-0 border-r border-slate-800 bg-slate-900">
-      <Panel />
+    <aside className="w-[300px] shrink-0 border-r border-slate-800/60 bg-slate-900 overflow-y-auto overflow-x-hidden custom-scrollbar">
+      <ResolvedPanel />
     </aside>
   );
 }

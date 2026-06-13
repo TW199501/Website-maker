@@ -102,7 +102,7 @@ export default function LandingNavbar() {
                   key={link.name} 
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="text-lg font-bold text-slate-900 hover:text-indigo-600 transition-colors"
+                  className="block py-3 text-lg font-bold text-slate-900 hover:text-indigo-600 transition-colors"
                 >
                   {link.name}
                 </a>

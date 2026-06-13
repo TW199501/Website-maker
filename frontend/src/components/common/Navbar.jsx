@@ -64,14 +64,14 @@ export default function Navbar() {
                       >
                         <Link 
                           to="/settings" 
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+                          className="flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
                         >
                           <User size={16} />
                           Profile Settings
                         </Link>
                         <button 
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
                         >
                           <LogOut size={16} />
                           Sign Out

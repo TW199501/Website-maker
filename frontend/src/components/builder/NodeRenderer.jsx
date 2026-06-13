@@ -40,7 +40,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
   } = useSortable({
     id: nodeId,
     data: { type: 'node', node },
-    disabled: activeTool !== 'select' || isEditing || node.locked,
+    disabled: activeTool !== 'hand' || isEditing || node.locked,
   });
 
   // Keep contentEditable in sync with state when not editing
@@ -73,7 +73,19 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
     }
 
     if (activeTool === 'hand') {
-      // Do nothing, let it bubble up to CanvasFrame to trigger pan
+      // Stop propagation so canvas panning doesn't start when clicking on elements.
+      // The element will be selected for movement; SmartCanvas capture handler
+      // already set up the drag operation via beginExistingElementPlacement.
+      e.stopPropagation();
+      if (e.shiftKey) {
+        if (isSelected) {
+          selectNodes(selectedNodeIds.filter((id) => id !== nodeId));
+        } else {
+          selectNodes([...selectedNodeIds, nodeId]);
+        }
+      } else {
+        selectNode(nodeId);
+      }
       return;
     }
 
@@ -192,13 +204,13 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
   if (!isPreview) {
     editorClasses = 'group/node relative transition-[box-shadow] duration-200 ';
     editorClasses += activeTool === 'hand'
-      ? 'cursor-grab active:cursor-grabbing '
+      ? 'cursor-move '
       : 'cursor-pointer ';
     if (isSelected) {
       editorClasses += isRootSection
         ? 'ring-2 ring-cyan-400 ring-offset-2 ring-offset-white z-20 '
         : 'ring-2 ring-indigo-500 ring-inset z-20 ';
-    } else if (activeTool === 'select' && !node.locked) {
+    } else if ((activeTool === 'select' || activeTool === 'hand') && !node.locked) {
       editorClasses += isRootSection
         ? 'hover:ring-2 hover:ring-cyan-300/70 hover:ring-offset-2 hover:ring-offset-white '
         : 'hover:ring-2 hover:ring-indigo-400/50 hover:ring-inset ';
@@ -226,7 +238,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
           style={{ objectFit: node.props.objectFit || 'cover', objectPosition: node.props.objectPosition || 'center' }}
           draggable={false}
         />
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -248,7 +260,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 3v18" /><path d="M3 12h18" />
         </svg>
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -281,7 +293,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
         <button type="button" className="rounded-xl bg-indigo-600 px-4 py-3 text-sm font-black uppercase tracking-widest text-white">
           {node.props?.buttonText || 'Submit'}
         </button>
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </form>
     );
@@ -303,7 +315,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
           <p className="text-sm font-black uppercase tracking-widest text-slate-700">Google Maps</p>
           <p className="mt-2 text-sm text-slate-500">{node.props?.location || node.content || 'Map location'}</p>
         </div>
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -325,7 +337,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
         {images.length ? images.map((src, index) => (
           <img key={`${src}-${index}`} src={src} alt={`${node.name || 'Gallery'} ${index + 1}`} className="h-full min-h-32 w-full rounded-xl object-cover" draggable={false} />
         )) : <span className="text-sm text-slate-500">Add images from the Media Library.</span>}
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -347,7 +359,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
         {links.map((link) => (
           <span key={link} className="rounded-full border border-current/20 px-3 py-1 text-sm font-bold">{link}</span>
         ))}
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -368,7 +380,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
       >
         <input className="min-w-0 flex-1 rounded-full border border-slate-200 px-3 py-2 text-sm" placeholder={node.props?.placeholder || 'Search'} readOnly />
         <button type="button" className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-bold text-white">{node.props?.buttonText || 'Search'}</button>
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </form>
     );
@@ -396,7 +408,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
             <p className="text-xs text-slate-400">Set URL in Media Properties</p>
           </div>
         )}
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -424,7 +436,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
             </div>
           ))}
         </div>
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -448,7 +460,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 01-4.09-1.12l-.29-.17-3.01.79.81-2.95-.19-.3A8 8 0 1112 20z"/></svg>
         <span>{node.content || 'WhatsApp'}</span>
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </a>
     );
@@ -472,7 +484,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
           <p className="text-sm font-bold text-slate-500">Lottie Animation</p>
           <p className="text-xs text-slate-400">Add .json URL in properties</p>
         </div>
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -502,7 +514,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
           <p className="text-sm font-bold text-white/70">3D Object</p>
           <p className="text-xs text-white/40">Upload .glb model in properties</p>
         </div>
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -526,7 +538,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
         ) : (
           <pre className="text-xs leading-5 whitespace-pre-wrap">{node.content || '<div>Custom HTML embed</div>'}</pre>
         )}
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -562,7 +574,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
         {...listeners}
       >
         {!isPreview && isSelected && <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold uppercase tracking-widest text-slate-400">Spacer</span>}
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -590,7 +602,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
         </div>
         <div className="p-3 text-sm text-slate-600">Content for "{activeTab}" tab. Double-click to edit or add child elements.</div>
         {node.children?.map((childId) => <NodeRenderer key={childId} nodeId={childId} isPreview={isPreview} />)}
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -620,7 +632,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
           </div>
         ))}
         {node.children?.map((childId) => <NodeRenderer key={childId} nodeId={childId} isPreview={isPreview} />)}
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -645,7 +657,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
         </div>
         <div className="text-sm text-slate-600">{node.content || 'Modal content'}</div>
         {node.children?.map((childId) => <NodeRenderer key={childId} nodeId={childId} isPreview={isPreview} />)}
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -674,7 +686,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
             <p key={item} className="rounded-lg px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100">{item}</p>
           ))}
         </div>
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </div>
     );
@@ -700,7 +712,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
             {i < crumbs.length - 1 && <span className="mx-1 text-slate-400">/</span>}
           </span>
         ))}
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </nav>
     );
@@ -722,7 +734,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
         <p className="text-sm font-bold mb-3">{node.content || 'Sidebar'}</p>
         {node.children?.map((childId) => <NodeRenderer key={childId} nodeId={childId} isPreview={isPreview} />)}
         {!isPreview && node.children?.length === 0 && <p className="text-xs opacity-50">Add child elements</p>}
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </aside>
     );
@@ -761,7 +773,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
           className="outline-none break-words min-w-[20px] inline-block w-full"
           dangerouslySetInnerHTML={{ __html: node.content }}
         />
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </RenderTag>
     );
@@ -789,7 +801,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
             <span className="text-[10px] uppercase font-bold text-slate-400 bg-white/80 px-2 py-1 rounded">Empty Container</span>
           </div>
         )}
-        {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+        {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
         {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
       </Tag>
     );
@@ -808,7 +820,7 @@ const NodeRenderer = memo(({ nodeId, isPreview = false }) => {
       {...listeners}
     >
       {node.content}
-      {!isPreview && isOnlySelected && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
+      {!isPreview && isOnlySelected && activeTool !== 'hand' && RESIZABLE_NODE_TYPES.has(node.type) && <ResizeHandles nodeId={nodeId} />}
       {!isPreview && isOnlySelected && <FloatingToolbar nodeId={nodeId} />}
     </div>
   );
