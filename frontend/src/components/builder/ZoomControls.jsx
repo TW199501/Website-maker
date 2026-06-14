@@ -95,19 +95,19 @@ export default function ZoomControls() {
       <button
         type="button"
         onClick={fitToScreen}
-        className="inline-flex h-8 items-center gap-1 rounded-lg px-2 text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+        className="inline-flex h-8 items-center gap-1 rounded-full px-3 text-slate-300 transition-all hover:bg-white/10 hover:text-white hover-lift"
         title="Fit canvas to screen (Ctrl + 1)"
       >
         <Maximize2 size={12} />
         Fit
       </button>
 
-      <span className="h-5 w-px bg-slate-800" />
+      <span className="h-5 w-px bg-white/10" />
 
       <button
         type="button"
         onClick={() => zoomOut(10)}
-        className="flex h-8 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+        className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-all hover:bg-white/10 hover:text-white hover-lift"
         title="Zoom out"
       >
         <Minus size={13} />
@@ -127,7 +127,7 @@ export default function ZoomControls() {
               event.currentTarget.blur();
             }
           }}
-          className="h-8 w-full rounded-lg border border-slate-800 bg-slate-900 py-0 pl-2 pr-5 text-right text-[10px] font-black tracking-widest text-white outline-none transition-colors focus:border-indigo-500 focus:bg-slate-950"
+          className="h-8 w-full rounded-full border border-white/5 bg-slate-900/50 py-0 pl-2 pr-5 text-right text-[10px] font-black tracking-widest text-white outline-none transition-colors focus:border-indigo-500 focus:bg-slate-900"
           aria-label="Zoom percentage"
         />
         <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-500">%</span>
@@ -136,7 +136,7 @@ export default function ZoomControls() {
       <button
         type="button"
         onClick={() => zoomIn(10)}
-        className="flex h-8 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+        className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-all hover:bg-white/10 hover:text-white hover-lift"
         title="Zoom in"
       >
         <Plus size={13} />
@@ -145,7 +145,7 @@ export default function ZoomControls() {
       <button
         type="button"
         onClick={togglePanel}
-        className="flex h-8 w-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+        className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-all hover:bg-white/10 hover:text-white hover-lift"
         title="Open zoom slider"
       >
         <ChevronDown size={13} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -153,7 +153,7 @@ export default function ZoomControls() {
 
       {open && (
         <div
-          className="fixed z-[120] max-h-72 w-[280px] overflow-y-auto rounded-2xl border border-slate-800 bg-slate-950 p-4 shadow-2xl shadow-black/50 custom-scrollbar"
+          className="fixed z-[120] max-h-72 w-[280px] overflow-y-auto rounded-2xl border border-white/[0.05] bg-slate-900/95 backdrop-blur-xl p-4 shadow-soft custom-scrollbar"
           style={{ 
             top: panelPosition.top !== undefined ? panelPosition.top : 'auto', 
             bottom: panelPosition.bottom !== undefined ? panelPosition.bottom : 'auto',
@@ -168,7 +168,7 @@ export default function ZoomControls() {
             <button
               type="button"
               onClick={resetZoom}
-              className="rounded-xl border border-slate-800 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-slate-300 hover:bg-slate-900 hover:text-white"
+              className="rounded-xl border border-white/10 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-slate-300 hover:bg-white/5 hover:text-white transition-colors"
             >
               100%
             </button>
@@ -193,8 +193,8 @@ export default function ZoomControls() {
                 onClick={() => setZoom(value)}
                 className={`rounded-xl border px-2 py-2 text-[9px] font-black uppercase tracking-widest transition-colors ${
                   Math.round(zoom) === value
-                    ? 'border-indigo-500 bg-indigo-600 text-white'
-                    : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                    ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
+                    : 'border-white/5 bg-slate-950/50 text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 {value}%

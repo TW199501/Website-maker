@@ -4,8 +4,8 @@ export function PanelShell({ title, eyebrow, children }) {
   return (
     <div className="h-full overflow-y-auto p-5 custom-scrollbar">
       <div className="mb-5">
-        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-indigo-400">{eyebrow}</p>
-        <h2 className="mt-1 text-xl font-black uppercase tracking-tight text-white">{title}</h2>
+        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-indigo-400 mb-2">{eyebrow}</p>
+        <h2 className="text-lg font-bold tracking-tight text-white">{title}</h2>
       </div>
       {children}
     </div>
@@ -28,16 +28,16 @@ export function ActionButton({ label, description, onClick, onDragStart, icon: I
       draggable={Boolean(onDragStart)}
       onDragStart={onDragStart}
       onClick={onClick}
-      className="group w-full rounded-2xl border border-slate-800 bg-slate-950 p-3 text-left transition-all hover:border-indigo-500/60 hover:bg-indigo-500/10"
+      className="group w-full rounded-2xl border border-white/5 bg-slate-950/50 p-3 text-left transition-all hover:border-indigo-500/30 hover:bg-indigo-500/10 hover-lift shadow-inner"
     >
       <div className="flex items-center gap-3">
         {Icon && (
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-indigo-300 group-hover:bg-indigo-600 group-hover:text-white">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-indigo-300 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
             <Icon size={16} />
           </div>
         )}
         <div className="min-w-0">
-          <p className="text-xs font-black uppercase tracking-widest text-white">{label}</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-200 group-hover:text-white transition-colors">{label}</p>
           {description && <p className="mt-1 text-[10px] leading-4 text-slate-500">{description}</p>}
         </div>
       </div>

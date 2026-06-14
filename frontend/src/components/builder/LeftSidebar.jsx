@@ -28,12 +28,13 @@ export default function LeftSidebar() {
         type="button"
         title={tool.name}
         onClick={() => handleToolClick(tool.id)}
-        className={`group relative h-10 w-10 rounded-lg flex items-center justify-center transition-all duration-200 ${
+        className={`group relative h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-300 hover-lift ${
           active 
-            ? 'bg-indigo-500/15 text-indigo-400' 
-            : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
+            ? 'bg-indigo-500/10 text-indigo-400 shadow-inner border border-indigo-500/20' 
+            : 'text-slate-400 hover:text-slate-100 hover:bg-white/5 border border-transparent'
         }`}
       >
+        {active && <div className="absolute left-[-8px] h-5 w-1 rounded-r-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" />}
         <Icon size={18} strokeWidth={active ? 2.5 : 2} />
         
         {/* Sleek Tooltip */}
@@ -49,7 +50,7 @@ export default function LeftSidebar() {
   };
 
   return (
-    <aside className="w-14 bg-slate-950 border-r border-slate-800/60 flex flex-col items-center py-3 shrink-0 z-50">
+    <aside className="w-[60px] bg-slate-950/80 backdrop-blur-md border-r border-white/[0.05] flex flex-col items-center py-4 shrink-0 z-50">
       {/* Top Tools Group */}
       <div className="flex flex-col items-center gap-1.5">
         {topTools.map(renderTool)}
@@ -61,7 +62,7 @@ export default function LeftSidebar() {
       {/* Bottom Tools Group */}
       <div className="flex flex-col items-center gap-1.5">
         {/* Subtle divider */}
-        <div className="w-6 h-[1px] bg-slate-800/60 mb-1 rounded-full" />
+        <div className="w-6 h-[1px] bg-white/[0.05] mb-2 rounded-full" />
         {bottomTools.map(renderTool)}
       </div>
     </aside>

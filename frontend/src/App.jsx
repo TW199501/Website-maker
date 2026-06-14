@@ -51,7 +51,7 @@ function App() {
       <ProjectProvider>
         <UIProvider>
           <Router>
-            <LayoutWrapper>
+            <LayoutWrapper>  
               <AppRoutes />
             </LayoutWrapper>
           </Router>

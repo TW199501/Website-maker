@@ -32,9 +32,6 @@ const MODEL_OPTIONS = [
 
 const CATEGORY_OPTIONS = [
   'Website Builder',
-  '2D Design',
-  'Animation',
-  '3D Design',
   'Business Strategy',
   'Marketing Content',
   'Project Planning',
@@ -46,8 +43,6 @@ const CATEGORY_OPTIONS = [
 const PROMPT_CHIPS = [
   'Create a website plan for my shop',
   'Suggest a landing page for my business',
-  'Generate 2D poster ideas',
-  'Create animation ideas for my brand',
   'Help me improve my project',
   'Create content for my homepage',
 ];

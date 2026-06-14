@@ -125,13 +125,13 @@ export default function BuilderTopBar() {
   };
 
   return (
-    <header className="h-14 bg-slate-950 border-b border-slate-800 flex items-center px-4 lg:px-6 shrink-0 z-50 shadow-sm relative">
+    <header className="h-14 bg-slate-950/80 backdrop-blur-md border-b border-white/[0.05] flex items-center px-4 lg:px-6 shrink-0 z-50 relative">
       {/* LEFT SECTION */}
       <div className="flex-1 flex items-center gap-4 min-w-0">
-        <Link to="/dashboard" title="Back to Dashboard" className="inline-flex items-center justify-center h-9 w-9 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <ArrowLeft size={18} />
+        <Link to="/dashboard" title="Back to Dashboard" className="inline-flex items-center justify-center h-8 w-8 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all hover-lift">
+          <ArrowLeft size={16} />
         </Link>
-        <div className="h-5 w-px bg-slate-800 hidden md:block" />
+        <div className="h-5 w-px bg-white/[0.05] hidden md:block" />
         <div className="min-w-0 flex items-center gap-1.5">
           <h1 className="truncate text-sm font-semibold text-slate-200">{project?.name || 'Website Builder'}</h1>
           <span className="text-slate-600">/</span>
@@ -139,24 +139,24 @@ export default function BuilderTopBar() {
             <button
               type="button"
               onClick={() => setPageDropdownOpen((o) => !o)}
-              className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-slate-400 transition hover:bg-slate-800 hover:text-white"
+              className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-400 transition-all hover:bg-white/5 hover:text-white hover-lift"
             >
               <FileText size={14} />
               <span className="max-w-[120px] truncate">{currentPage?.name || 'Home'}</span>
               <ChevronDown size={14} />
             </button>
             {pageDropdownOpen && (
-              <div className="absolute left-0 top-9 z-[100] w-64 rounded-2xl border border-slate-800 bg-slate-950 p-2 shadow-2xl">
+              <div className="absolute left-0 top-9 z-[100] w-64 rounded-2xl border border-white/[0.05] bg-slate-900/95 backdrop-blur-xl p-2 shadow-soft">
                 <p className="px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.25em] text-slate-600">Switch Page</p>
                 {(project?.pages || []).map((page) => (
                   <button
                     key={page.id}
                     type="button"
                     onClick={() => handleSwitchPage(page.id)}
-                    className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-bold transition ${
+                    className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-bold transition-all ${
                       currentPage?.id === page.id
-                        ? 'bg-indigo-600/20 text-indigo-200'
-                        : 'text-slate-300 hover:bg-slate-900 hover:text-white'
+                        ? 'bg-indigo-500/10 text-indigo-300'
+                        : 'text-slate-300 hover:bg-white/5 hover:text-white'
                     }`}
                   >
                     {page.isHome ? <Home size={13} className="shrink-0 text-indigo-400" /> : <FileText size={13} className="shrink-0 text-slate-500" />}
@@ -176,30 +176,30 @@ export default function BuilderTopBar() {
           type="button"
           onClick={() => setCanvasView(canvasView === 'design' ? 'routing' : 'design')}
           title={canvasView === 'design' ? 'View routing map' : 'View design'}
-          className={`h-9 flex items-center gap-2 rounded-lg px-3 text-xs font-semibold tracking-wide transition-colors ${
-            canvasView === 'routing' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+          className={`h-8 flex items-center gap-1.5 rounded-full px-3 text-[11px] font-bold uppercase tracking-widest transition-all ${
+            canvasView === 'routing' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.15)]' : 'text-slate-400 hover:bg-white/5 hover:text-white hover-lift border border-transparent'
           }`}
         >
           <Map size={16} />
           <span className="hidden sm:inline">Map</span>
         </button>
         
-        <div className="h-5 w-px bg-slate-800" />
+        <div className="h-5 w-px bg-white/[0.05]" />
         
         <DeviceSwitcher />
         
-        <div className="h-5 w-px bg-slate-800" />
+        <div className="h-5 w-px bg-white/[0.05]" />
         
         <ToolBar />
 
-        <div className="h-5 w-px bg-slate-800" />
+        <div className="h-5 w-px bg-white/[0.05]" />
 
         <div className="flex items-center gap-1">
           <button
             type="button"
             title="Left Panel"
             onClick={() => setLeftPanelCollapsed(!leftPanelCollapsed)}
-            className={`h-9 w-9 rounded-lg flex items-center justify-center transition-colors ${!leftPanelCollapsed ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+            className={`h-8 w-8 rounded-lg flex items-center justify-center transition-all hover-lift ${!leftPanelCollapsed ? 'bg-white/10 text-white shadow-inner border border-white/[0.05]' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
             {leftPanelCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
           </button>
@@ -207,7 +207,7 @@ export default function BuilderTopBar() {
             type="button"
             title="Right Panel"
             onClick={() => setRightPanelCollapsed(!rightPanelCollapsed)}
-            className={`h-9 w-9 rounded-lg flex items-center justify-center transition-colors ${!rightPanelCollapsed ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+            className={`h-8 w-8 rounded-lg flex items-center justify-center transition-all hover-lift ${!rightPanelCollapsed ? 'bg-white/10 text-white shadow-inner border border-white/[0.05]' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
             {rightPanelCollapsed ? <PanelRightOpen size={16} /> : <PanelRightClose size={16} />}
           </button>
@@ -215,7 +215,7 @@ export default function BuilderTopBar() {
             type="button"
             title="Fullscreen"
             onClick={() => setFullscreenCanvas(!fullscreenCanvas)}
-            className={`h-9 w-9 rounded-lg flex items-center justify-center transition-colors ${fullscreenCanvas ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+            className={`h-8 w-8 rounded-lg flex items-center justify-center transition-all hover-lift ${fullscreenCanvas ? 'bg-white/10 text-white shadow-inner border border-white/[0.05]' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'}`}
           >
             {fullscreenCanvas ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
           </button>
@@ -232,56 +232,56 @@ export default function BuilderTopBar() {
         <button
           type="button"
           onClick={() => setAiDrawerOpen(!aiDrawerOpen)}
-          className={`inline-flex items-center justify-center h-9 px-3 mr-2 rounded-lg text-sm font-black uppercase tracking-widest transition-all shadow-lg ${
+          className={`inline-flex items-center justify-center h-8 px-3 mr-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all hover-lift ${
             aiDrawerOpen 
-              ? 'bg-violet-600 text-white shadow-violet-500/30' 
-              : 'bg-slate-800 text-violet-400 hover:bg-violet-500/20 hover:text-violet-300'
+              ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.2)]' 
+              : 'bg-white/5 text-violet-400 border border-white/[0.05] hover:bg-violet-500/10 hover:text-violet-300'
           }`}
         >
-          <Sparkles size={16} className="sm:mr-1.5" />
+          <Sparkles size={14} className="sm:mr-1.5" />
           <span className="hidden sm:inline">AI Assistant</span>
         </button>
 
         <button
           type="button"
           onClick={saveProject}
-          className="inline-flex items-center justify-center h-9 px-3 rounded-lg text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 hover:text-white transition-colors"
+          className="inline-flex items-center justify-center h-8 px-3 rounded-full text-xs font-bold text-slate-300 border border-white/5 hover:bg-white/10 hover:text-white transition-all hover-lift"
         >
-          <Save size={16} className="sm:mr-1.5" />
+          <Save size={14} className="sm:mr-1.5" />
           <span className="hidden sm:inline">Save</span>
         </button>
 
         <button
           type="button"
           onClick={handlePreview}
-          className="inline-flex items-center justify-center h-9 px-3 rounded-lg text-sm font-medium text-slate-300 border border-slate-700 hover:border-slate-500 hover:text-white transition-colors"
+          className="inline-flex items-center justify-center h-8 px-3 rounded-full text-xs font-bold text-slate-300 border border-white/10 hover:border-white/30 hover:bg-white/5 hover:text-white transition-all hover-lift"
         >
-          <Eye size={16} className="sm:mr-1.5" />
+          <Eye size={14} className="sm:mr-1.5" />
           <span className="hidden sm:inline">Preview</span>
         </button>
 
         <button
           type="button"
           onClick={handlePublish}
-          className="inline-flex items-center justify-center h-9 px-4 rounded-lg text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-colors shadow-sm"
+          className="inline-flex items-center justify-center h-8 px-4 rounded-full text-xs font-black uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-500 transition-all shadow-soft hover-lift shadow-indigo-500/20"
         >
-          <Rocket size={16} className="sm:mr-1.5" />
+          <Rocket size={14} className="sm:mr-1.5" />
           <span className="hidden sm:inline">Publish</span>
         </button>
 
-        <div className="h-5 w-px bg-slate-800 ml-1 mr-1" />
+        <div className="h-5 w-px bg-white/[0.05] ml-1 mr-1" />
 
         <div className="relative">
           <button
             type="button"
             title="More options"
             onClick={() => setMenuOpen((open) => !open)}
-            className="h-9 w-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800"
+            className="h-8 w-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-all hover-lift"
           >
-            <MoreHorizontal size={18} />
+            <MoreHorizontal size={16} />
           </button>
           {menuOpen && (
-            <div className="absolute right-0 top-11 w-56 rounded-2xl border border-slate-800 bg-slate-950 p-2 shadow-2xl">
+            <div className="absolute right-0 top-10 w-56 rounded-2xl border border-white/[0.05] bg-slate-900/95 backdrop-blur-xl p-2 shadow-soft">
               {[
                 { id: 'export', label: topBarTools.find((tool) => tool.id === 'export')?.name || 'Export Website', icon: FileCode2 },
                 { id: 'version-history', label: topBarTools.find((tool) => tool.id === 'version-history')?.name || 'Version History', icon: History },
@@ -295,7 +295,7 @@ export default function BuilderTopBar() {
                     setMenuOpen(false);
                     moreActions[id]?.();
                   }}
-                  className="flex w-full items-center gap-2 text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-900 hover:text-white"
+                  className="flex w-full items-center gap-2 text-left px-3 py-2 rounded-xl text-[11px] font-bold uppercase tracking-widest text-slate-300 hover:bg-white/5 hover:text-white transition-all"
                 >
                   <Icon size={14} />
                   {label}

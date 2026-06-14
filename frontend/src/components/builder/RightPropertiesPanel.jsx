@@ -31,7 +31,7 @@ function PageOverview() {
   return (
     <div className="p-5 space-y-5">
       {/* Page Info */}
-      <div className="rounded-2xl border border-slate-800/60 bg-slate-950/50 p-5">
+      <div className="rounded-2xl border border-white/5 bg-slate-950/50 p-5 shadow-inner">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-3">Current Page</p>
         <h3 className="text-base font-bold text-white mb-1">{currentPage?.name || 'Home'}</h3>
         <p className="text-xs text-slate-500">/{currentPage?.slug || ''}</p>
@@ -40,7 +40,7 @@ function PageOverview() {
       {/* Quick Stats */}
       <div className="grid grid-cols-2 gap-3">
         {quickStats.map(({ icon: Icon, label, value }) => (
-          <div key={label} className="rounded-xl border border-slate-800/40 bg-slate-950/30 p-3 text-center">
+          <div key={label} className="rounded-xl border border-white/5 bg-slate-950/30 p-3 text-center shadow-inner hover:bg-slate-950/50 transition-colors">
             <Icon size={16} className="mx-auto mb-2 text-slate-500" />
             <p className="text-lg font-black text-white">{value}</p>
             <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{label}</p>
@@ -49,7 +49,7 @@ function PageOverview() {
       </div>
 
       {/* Helpful Hint */}
-      <div className="rounded-2xl border border-dashed border-slate-800/60 p-4 text-center">
+      <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-4 text-center">
         <MousePointer2 size={20} className="mx-auto mb-3 text-slate-600" />
         <p className="text-xs font-medium text-slate-400 leading-relaxed">
           Click any element on the canvas to edit its properties, or use the left panel to add new elements.
@@ -65,9 +65,22 @@ export default function RightPropertiesPanel() {
   const isMultiSelect = selectedNodeIds.length > 1;
   const hasSelection = Boolean(node || selectedInteraction || isMultiSelect);
 
+  // Categorize the selected node to determine which property panels to show
+  const type = node?.type;
+  const isText = ['heading', 'paragraph', 'countdown'].includes(type);
+  const isButton = ['button', 'navLink', 'footerLink', 'whatsappButton'].includes(type);
+  const isMedia = ['image', 'video', 'icon', 'lottieAnimation', 'threeDObject', 'gallery', 'slider'].includes(type);
+  const isImage = type === 'image';
+  const isForm = ['form', 'contactForm', 'bookingForm', 'searchBar'].includes(type);
+  const isEcommerce = ['productCard', 'pricingCard'].includes(type);
+  const isSectionOrPage = ['page', 'section', 'navbar', 'footer'].includes(type);
+  const isSpacer = type === 'spacer';
+  const usesBackground = isSectionOrPage || ['container', 'grid', 'flex', 'row', 'column', 'card', 'blogCard', 'testimonialCard', 'serviceCard', 'modal', 'tabs', 'accordion'].includes(type);
+  const usesDesign = !isSpacer && type !== 'page'; // Most elements use Design properties except Page and Spacer
+
   return (
-    <aside className="w-[320px] shrink-0 overflow-y-auto border-l border-slate-800/60 bg-slate-900 custom-scrollbar">
-      <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-800/60 bg-slate-900 px-5 py-3.5">
+    <aside className="w-[320px] shrink-0 overflow-y-auto border-l border-white/[0.05] bg-slate-900/95 backdrop-blur-md custom-scrollbar pb-10 shadow-[-4px_0_24px_rgba(0,0,0,0.2)]">
+      <div className="sticky top-0 z-20 flex items-center justify-between border-b border-white/[0.05] bg-slate-900/80 backdrop-blur-md px-5 py-3.5 shadow-soft">
         <div>
           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-indigo-400/80">
             {hasSelection ? 'Edit selected' : 'Page overview'}
@@ -94,21 +107,39 @@ export default function RightPropertiesPanel() {
 
       {node && !selectedInteraction && !isMultiSelect && (
         <>
-          <SectionSpecificProperties />
-          <LayoutProperties />
-          <TextProperties />
-          <DesignProperties />
-          <ButtonProperties />
-          <LinkSettingsProperties />
-          <MediaProperties />
-          <SEOProperties />
-          <AnimationProperties />
-          <BackgroundProperties />
-          <ResponsiveProperties />
-          <FormProperties />
-          <EcommerceProperties />
-          <AdvancedProperties />
-          <AccessibilityProperties />
+          {isSectionOrPage && <SectionSpecificProperties />}
+          
+          {isSpacer ? (
+            // Spacer gets ONLY specific minimal properties
+            <>
+              <LayoutProperties />
+              <ResponsiveProperties />
+            </>
+          ) : (
+            // All other elements get Element-Specific + Universal properties
+            <>
+              <LayoutProperties />
+              {isText && <TextProperties />}
+              {isButton && (
+                <>
+                  <ButtonProperties />
+                  <LinkSettingsProperties />
+                </>
+              )}
+              {isMedia && <MediaProperties />}
+              {isImage && <SEOProperties />}
+              {usesBackground && <BackgroundProperties />}
+              {isForm && <FormProperties />}
+              {isEcommerce && <EcommerceProperties />}
+              {usesDesign && <DesignProperties />}
+              
+              {/* Universal Settings */}
+              <AnimationProperties />
+              <ResponsiveProperties />
+              <AdvancedProperties />
+              <AccessibilityProperties />
+            </>
+          )}
         </>
       )}
       {hasSelection && <ExportCodeProperties />}

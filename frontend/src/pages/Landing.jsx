@@ -138,7 +138,7 @@ export default function Landing() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20 w-full px-4 sm:px-0">
               <Link 
-                to="/register" 
+                to="/login" 
                 className="w-full sm:w-auto bg-slate-900 text-white px-10 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest hover:bg-indigo-600 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-slate-200 text-center"
               >
                 Start Creating Now
@@ -447,7 +447,7 @@ export default function Landing() {
             No coding. No design experience. Just choose, customize, save, and publish.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center w-full px-4 sm:px-0">
-            <Link to="/register" className="w-full sm:w-auto bg-white text-slate-900 px-12 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest hover:bg-indigo-400 hover:text-white transition-all text-center">
+            <Link to="/login" className="w-full sm:w-auto bg-white text-slate-900 px-12 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest hover:bg-indigo-400 hover:text-white transition-all text-center">
               Get Started Free
             </Link>
             <button className="w-full sm:w-auto border-2 border-slate-700 text-white px-12 py-5 rounded-2xl text-lg font-bold uppercase tracking-widest hover:border-white transition-all text-center">

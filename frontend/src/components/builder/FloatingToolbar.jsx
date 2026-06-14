@@ -26,8 +26,8 @@ const ToolButton = ({ title, onClick, children, tone = 'default' }) => (
       event.preventDefault();
       onClick?.(event);
     }}
-    className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 transition-all ${
-      tone === 'danger' ? 'text-red-200 hover:bg-red-500/15' : 'text-slate-200 hover:bg-slate-800 hover:text-white'
+    className={`flex h-8 min-w-8 items-center justify-center rounded-full px-2 transition-all hover-lift ${
+      tone === 'danger' ? 'text-red-300 hover:bg-red-500/20 hover:text-red-100' : 'text-slate-300 hover:bg-white/10 hover:text-white'
     }`}
   >
     {children}
@@ -58,11 +58,12 @@ export default function FloatingToolbar({ nodeId }) {
   return (
     <div
       data-builder-toolbar
-      className="absolute left-1/2 top-0 z-40 flex -translate-x-1/2 -translate-y-[calc(100%+8px)] items-center gap-1 rounded-xl border border-slate-700 bg-slate-950/95 p-1 text-white shadow-2xl backdrop-blur"
+      className="absolute left-1/2 top-0 z-40 flex -translate-x-1/2 -translate-y-[calc(100%+12px)] items-center gap-0.5 rounded-full border border-white/10 bg-slate-900/80 p-1 text-white shadow-soft backdrop-blur-xl ring-1 ring-white/5"
       onClick={(event) => event.stopPropagation()}
       onPointerDown={(event) => event.stopPropagation()}
+      style={{ fontSize: '14px', lineHeight: '1' }} // Prevent inheritance of giant canvas font sizes
     >
-      <div className="flex h-8 min-w-8 items-center justify-center px-1 text-slate-500 cursor-grab active:cursor-grabbing">
+      <div className="flex h-8 min-w-8 items-center justify-center px-1 text-slate-400 cursor-grab active:cursor-grabbing hover:text-white transition-colors">
         <GripVertical size={15} />
       </div>
       <ToolButton title="Bring forward" onClick={() => bringToFrontInMap(nodeId)}><ArrowUpToLine size={14} /></ToolButton>
@@ -79,7 +80,7 @@ export default function FloatingToolbar({ nodeId }) {
 
       {isText && (
         <>
-          <span className="mx-1 h-5 w-px bg-slate-700" />
+          <span className="mx-1 h-5 w-px bg-white/10" />
           <ToolButton title="Bold" onClick={() => updateNodeStylesInMap(nodeId, { fontWeight: node.styles?.fontWeight === '800' ? '500' : '800' })}>
             <Bold size={14} />
           </ToolButton>
@@ -87,14 +88,14 @@ export default function FloatingToolbar({ nodeId }) {
             <AlignCenter size={14} />
           </ToolButton>
           <ToolButton title="Increase font size" onClick={() => updateNodeStylesInMap(nodeId, { fontSize: `${Math.min(96, Number.parseInt(node.styles?.fontSize || '18', 10) + 2)}px` })}>
-            T+
+            <span className="font-sans text-[13px] font-black tracking-tighter">T+</span>
           </ToolButton>
         </>
       )}
 
       {isImage && (
         <>
-          <span className="mx-1 h-5 w-px bg-slate-700" />
+          <span className="mx-1 h-5 w-px bg-white/10" />
           <ToolButton title="Fit image" onClick={() => updateNodePropsInMap(nodeId, { objectFit: node.props?.objectFit === 'contain' ? 'cover' : 'contain' })}>
             <Maximize2 size={14} />
           </ToolButton>
@@ -103,14 +104,14 @@ export default function FloatingToolbar({ nodeId }) {
 
       {isButton && (
         <>
-          <span className="mx-1 h-5 w-px bg-slate-700" />
+          <span className="mx-1 h-5 w-px bg-white/10" />
           <ToolButton title="Button style" onClick={() => updateNodePropsInMap(nodeId, { variant: node.props?.variant === 'outline' ? 'solid' : 'outline' })}>
             <Paintbrush size={14} />
           </ToolButton>
         </>
       )}
 
-      <span className="mx-1 h-5 w-px bg-slate-700" />
+      <span className="mx-1 h-5 w-px bg-white/10" />
       <ToolButton title="Delete" tone="danger" onClick={() => deleteNodeFromMap(nodeId)}>
         <Trash2 size={14} />
       </ToolButton>

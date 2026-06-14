@@ -49,7 +49,7 @@ export default function LeftToolPanel() {
   const ResolvedPanel = Panel || AddElementsPanel;
 
   return (
-    <aside className="w-[300px] shrink-0 border-r border-slate-800/60 bg-slate-900 overflow-y-auto overflow-x-hidden custom-scrollbar">
+    <aside className="w-[300px] shrink-0 border-r border-white/[0.05] bg-slate-900/95 backdrop-blur-md overflow-y-auto overflow-x-hidden custom-scrollbar shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
       <ResolvedPanel />
     </aside>
   );

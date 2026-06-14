@@ -18,36 +18,36 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-40 bg-gray-900/80 backdrop-blur-md border-b border-gray-800 px-6 py-4">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
+    <nav className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-xl border-b border-white/[0.05] px-6 h-14 flex items-center shadow-soft">
+      <div className="max-w-7xl mx-auto flex justify-between items-center w-full">
         <div className="flex items-center gap-4">
           <button 
             onClick={toggleMobileMenu}
-            className="lg:hidden p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+            className="lg:hidden p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors hover-lift"
           >
-            <Menu size={24} />
+            <Menu size={20} />
           </button>
           
-          <Link to="/" className="flex items-center gap-2">
-            <img src={shopcraftLogoLight} alt="ShopCraft Studio" className="h-12 w-auto" />
+          <Link to="/" className="flex items-center gap-2 hover-lift">
+            <img src={shopcraftLogoLight} alt="ShopCraft Studio" className="h-8 w-auto" />
           </Link>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-5">
           {user ? (
-            <div className="flex items-center gap-4">
-              <button className="p-2 text-gray-400 hover:text-white transition-colors relative">
-                <Bell size={20} />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full border-2 border-gray-900"></span>
+            <div className="flex items-center gap-3">
+              <button className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all relative hover-lift">
+                <Bell size={18} />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full border-2 border-slate-900"></span>
               </button>
               
               <div className="relative">
                 <button 
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center gap-3 p-1.5 pl-3 bg-gray-800 rounded-xl border border-gray-700 hover:border-gray-600 transition-all"
+                  className="flex items-center gap-3 p-1 pl-3 bg-white/5 rounded-xl border border-white/[0.05] hover:bg-white/10 hover-lift transition-all"
                 >
-                  <span className="text-sm font-medium text-gray-200">{user.name}</span>
-                  <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center text-white font-bold">
+                  <span className="text-sm font-medium text-slate-200">{user.name}</span>
+                  <div className="w-7 h-7 bg-indigo-500 rounded-lg flex items-center justify-center text-white text-sm font-bold shadow-soft">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                 </button>
@@ -60,18 +60,18 @@ export default function Navbar() {
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl z-20 py-2 overflow-hidden"
+                        className="absolute right-0 mt-3 w-48 glass-panel rounded-xl z-20 py-2 overflow-hidden"
                       >
                         <Link 
                           to="/settings" 
-                          className="flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
                         >
                           <User size={16} />
                           Profile Settings
                         </Link>
                         <button 
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
                         >
                           <LogOut size={16} />
                           Sign Out
@@ -84,12 +84,12 @@ export default function Navbar() {
             </div>
           ) : (
             <div className="flex items-center gap-4">
-              <Link to="/login" className="text-gray-400 hover:text-white font-medium transition-colors">
+              <Link to="/login" className="text-slate-400 hover:text-white font-medium transition-colors hover-lift">
                 Sign In
               </Link>
               <Link 
                 to="/register" 
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg shadow-indigo-500/20 transition-all active:scale-95"
+                className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-xl text-sm font-semibold shadow-lg shadow-indigo-500/20 transition-all hover-lift active:scale-95"
               >
                 Join Free
               </Link>

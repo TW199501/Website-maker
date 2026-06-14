@@ -86,8 +86,6 @@ export default function Dashboard() {
             { label: 'Recent Projects', icon: Clock, count: projects.length, path: '/dashboard/projects' },
             { label: 'Saved Templates', icon: Layout, count: 0, path: '/dashboard/templates' },
             { label: 'Favorite Projects', icon: Star, count: projects.filter((project) => project.favorite).length, path: '/dashboard/favorites' },
-            { label: 'Saved 2D Designs', icon: Palette, count: projects.filter((project) => project.type === 'design2d').length, path: '/builder/design-2d' },
-            { label: 'Saved 3D Visuals', icon: Box, count: projects.filter((project) => project.type === 'model3d').length, path: '/builder/model-3d' },
             { label: 'Published Websites', icon: Globe, count: projects.filter(p => p.status === 'published').length, path: '/dashboard/published' },
           ].map((cat, i) => (
             <motion.div 
